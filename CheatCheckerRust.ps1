@@ -59,7 +59,7 @@ $form.ForeColor = [System.Drawing.Color]::Lime
 # Логотип
 $logo = New-Object System.Windows.Forms.Label
 $logo.Text = @"
-  ____       _ _   
+  ____        _ _  
  |  _ \ _   _| | |_ 
  | |_) | | | | | __|
  |  _ <| |_| | | |_ 
@@ -87,8 +87,8 @@ $status.Size = New-Object System.Drawing.Size(620, 20)
 $status.ForeColor = [System.Drawing.Color]::White
 $form.Controls.Add($status)
 
-# Лог
-$logBox = New-Object System.Windows.Forms.TextBox
+# Лог (ИСПРАВЛЕНО: Заменено на RichTextBox для поддержки цвета)
+$logBox = New-Object System.Windows.Forms.RichTextBox
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.Location = New-Object System.Drawing.Point(20, 195)
@@ -97,6 +97,7 @@ $logBox.BackColor = [System.Drawing.Color]::FromArgb(20, 20, 20)
 $logBox.ForeColor = [System.Drawing.Color]::Lime
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 9)
 $logBox.ReadOnly = $true
+$logBox.BorderStyle = "None"
 $form.Controls.Add($logBox)
 
 # Кнопка
@@ -109,25 +110,25 @@ $btn.ForeColor = [System.Drawing.Color]::White
 $btn.FlatStyle = "Flat"
 $form.Controls.Add($btn)
 
-# === Логирование ===
+# === Логирование (ИСПРАВЛЕНО: Добавлен сброс цвета) ===
 function Log {
-    param([string]$msg, [string]$color = "White")
+    param([string]$msg, [string]$color = "Lime")
     $timestamp = Get-Date -Format "HH:mm:ss"
-    $line = "[$timestamp] $msg"
-    $logBox.AppendText("$line`r`n")
-    if ($color -eq "Red") { 
-        $logBox.SelectionStart = $logBox.TextLength - $line.Length
-        $logBox.SelectionLength = $line.Length
-        $logBox.SelectionColor = [System.Drawing.Color]::Red 
-    } elseif ($color -eq "Yellow") { 
-        $logBox.SelectionStart = $logBox.TextLength - $line.Length
-        $logBox.SelectionLength = $line.Length
-        $logBox.SelectionColor = [System.Drawing.Color]::Yellow 
-    } elseif ($color -eq "Cyan") {
-        $logBox.SelectionStart = $logBox.TextLength - $line.Length
-        $logBox.SelectionLength = $line.Length
-        $logBox.SelectionColor = [System.Drawing.Color]::Cyan
-    }
+    $line = "[$timestamp] $msg`n"
+    
+    $start = $logBox.TextLength
+    $logBox.AppendText($line)
+    
+    # Выделяем и красим добавленную строку
+    $logBox.SelectionStart = $start
+    $logBox.SelectionLength = $line.Length
+    $logBox.SelectionColor = [System.Drawing.Color]::$color
+    
+    # Сбрасываем курсор в конец, чтобы следующий текст не наследовал цвет
+    $logBox.SelectionStart = $logBox.TextLength
+    $logBox.SelectionLength = 0
+    $logBox.SelectionColor = $logBox.ForeColor
+
     $logBox.ScrollToCaret()
     [System.Windows.Forms.Application]::DoEvents()
 }
@@ -190,7 +191,7 @@ $scan = {
     Start-Process -FilePath "CheatCheckModules.exe" -WindowStyle Hidden
 
     Log "╔══════════════════════════════════════════════════════════════╗" "Cyan"
-    Log "║                     Ч И Т Ы   Н Е   Н А Й Д Е Н Ы             ║" "Lime"
+    Log "║                Ч И Т Ы   Н Е   Н А Й Д Е Н Ы                ║" "Lime"
     Log "╚══════════════════════════════════════════════════════════════╝" "Cyan"
     Log "Система полностью чиста. Можно играть на официальных серверах." "Lime"
     Log "Facepunch Anti-Cheat: ЗАЩИТА АКТИВНА" "Cyan"
